@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> 946f86b84bf690e8ac786286800fd308a386f5a5
 annotated-types==0.7.0
 asgiref==3.10.0
 bcrypt==4.3.0
