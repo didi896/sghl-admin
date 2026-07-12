@@ -27,11 +27,11 @@ class Patient(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     ipp = models.CharField(max_length=20, unique=True, blank=True)  
     code_sghl = models.CharField(max_length=20, unique=True, editable=False)
-    nom = models.CharField(max_length=100)
-    prenom = models.CharField(max_length=100)
+    nom = models.CharField(max_length=100, blank=True, null=True)
+    prenom = models.CharField(max_length=100, blank=True, null=True)
     date_naissance = models.DateField(null=True, blank=True)
     sexe = models.CharField(max_length=1, choices=SEXE_CHOICES, default='M')
-    telephone = models.CharField(max_length=20, unique=True)
+    telephone = models.CharField(max_length=20, unique=True, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
     adresse = models.TextField(blank=True, null=True)
     groupe_sanguin = models.CharField(max_length=5, blank=True, null=True)
@@ -47,8 +47,10 @@ class Patient(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.nom.upper()} {self.prenom} ({self.code_sghl})"
-
+        # Gestion des cas où nom ou prénom pourraient être None
+        nom_affichage = self.nom.upper() if self.nom else "SANS NOM"
+        prenom_affichage = self.prenom if self.prenom else ""
+        return f"{nom_affichage} {prenom_affichage} ({self.code_sghl})"
 class Doctor(models.Model):
     SEXE_CHOICES = [('M', 'Masculin'), ('F', 'Féminin')]
     nom = models.CharField(max_length=100)

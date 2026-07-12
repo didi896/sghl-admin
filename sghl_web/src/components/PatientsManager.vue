@@ -60,11 +60,53 @@ const getCookie = (name) => {
 };
 
 const savePatient = async () => {
-  // --- CORRECTION : Validation et Formatage ---
-  if (!currentPatient.value.nom || !currentPatient.value.telephone) {
+  // 1. Validation locale : on vérifie que les champs obligatoires ne sont pas vides
+  if (!currentPatient.value.nom.trim() || !currentPatient.value.telephone.trim()) {
     alert("Le nom et le téléphone sont obligatoires.");
     return;
   }
+
+  // 2. Préparation des données
+  const payload = { ...currentPatient.value };
+
+  // Nettoyage : si date_naissance est vide, on l'enlève pour éviter l'erreur de format
+  if (!payload.date_naissance || payload.date_naissance === "") {
+    delete payload.date_naissance;
+  }
+
+  // Suppression du mot de passe s'il est vide (pour ne pas écraser l'existant bêtement)
+  if (!payload.password || payload.password === "") {
+    delete payload.password;
+  }
+
+  const method = modalType.value === 'add' ? 'POST' : 'PUT';
+  const url = modalType.value === 'add' 
+    ? 'http://127.0.0.1:8000/clinical/rest/patients/' 
+    : `http://127.0.0.1:8000/clinical/rest/patients/${currentPatient.value.id}/`;
+
+  try {
+    const response = await fetch(url, {
+      method: method,
+      headers: { 
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken')
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      showModal.value = false;
+      await fetchPatients();
+    } else {
+      const errorData = await response.json();
+      // Affiche l'erreur détaillée pour comprendre ce qui bloque côté Django
+      console.error("Erreur serveur :", errorData);
+      alert("Erreur serveur : " + JSON.stringify(errorData));
+    }
+  } catch (error) {
+    console.error("Erreur de connexion :", error);
+  }
+};
 
   // Note: Si votre input type="date" est bien utilisé, il envoie déjà du YYYY-MM-DD.
   // Si le champ est vide, on envoie null pour éviter les erreurs de format.
