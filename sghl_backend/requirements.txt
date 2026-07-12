@@ -3,9 +3,6 @@ annotated-types==0.7.0
 asgiref==3.10.0
 bcrypt==4.3.0
 charset-normalizer==3.4.6
-CTkMessagebox==2.7
-customtkinter==5.2.2
-darkdetect==0.8.0
 Django==5.2.8
 django-cors-headers==4.9.0
 django-ninja==1.6.2
